@@ -3,26 +3,28 @@ import { expect, Page } from "@playwright/test";
 
 const baseURL = 'https://www.klikindomaret.com/';
 // const popupSelector = '/html/body/div[1]/div/div/div[18]/div/div/div/button';
-const foodSelector = '/html/body/div[1]/div/div/div[5]/div/div[1]/div/div[2]/div/div/div[2]/div/div[1]/div/a/div';
-const selaiSelector = '/html/body/div[1]/div/div/div[4]/main/div/div[1]/div/ul/aside/ul/li/div[2]/ul/li[7]/div[1]/div[2]/span[2]';
-const MaduSelector = '/html/body/div[1]/div/div/div[4]/main/div/div[1]/div/ul/aside/ul/li/div[2]/ul/li[7]/div[2]/ul/a[1]/li/span';
-const PrductSelector = '/html/body/div[1]/div/div/div[4]/main/div[2]/div[2]/div[3]/div[1]/div[1]/div/div/div/div[1]/div/button[1]';
-const usernameInputSelector = '/html/body/div[1]/div/div/div[6]/div/div/div/div/form/div[1]/div[1]/input';
+const foodSelector = 'text="Makanan"';
+const selaiGroupSelector = 'aside >> text="Sarapan & Selai"';
+const selaiSelector = 'aside >> text="Selai"';
+const MaduSelector = 'aside >> text="Madu"';
+const PrductSelector = 'xpath=/html/body/div[1]/div/div/div[4]/main/div[2]/div[2]/div[3]/div[1]/div[1]/div/div/div/div[1]/div/button[1]';
+const usernameInputSelector = 'xpath=/html/body/div[1]/div/div/div[6]/div/div/div/div/form/div[1]/div[1]/input';
 const passwordInputSelector = '#password';
-const selanjutnyaButtonSelector = '/html/body/div[1]/div/div/div[6]/div/div/div/div/form/div[1]/div[3]/button';
-const DaftarButtonSelector = '/html/body/div[1]/div/div/div[6]/div/div/div/div/div[4]/button[2]';
+const selanjutnyaButtonSelector = 'xpath=/html/body/div[1]/div/div/div[6]/div/div/div/div/form/div[1]/div[3]/button';
+const DaftarButtonSelector = 'xpath=/html/body/div[1]/div/div/div[6]/div/div/div/div/div[4]/button[2]';
 
 // const assertionSelector = '//*[@id="header"]/div[2]/div[1]/span/img';
-const assertionMakanan = '/html/body/div[1]/div/div/div[4]/main/div/div[1]/div/ul/aside/ul/div'
-const assertionMadu = '/html/body/div[1]/div/div/div[4]/main/div[2]/div[2]/div[3]/div[1]/div[1]/div/div/a/div/h2'
-const assertionProduct = '/html/body/div[1]/div/div/div[6]/div/div/div/div/div/div'
-const assertionLogin = '/html/body/div[1]/div/div/div[6]/div/div/div/div/div[2]'
+const assertionMakanan = 'aside'
+const assertionMadu = 'xpath=/html/body/div[1]/div/div/div[4]/main/div[2]/div[2]/div[3]/div[1]/div[1]/div/div/a/div/h2'
+const assertionProduct = 'xpath=/html/body/div[1]/div/div/div[6]/div/div/div/div/div/div'
+const assertionLogin = 'xpath=/html/body/div[1]/div/div/div[6]/div/div/div/div/div[2]'
 
 export class DataLandingPage {
     readonly page: Page;
     readonly baseURL: string;
     // readonly popupSelector: string;
     readonly foodSelector: string;
+    readonly selaiGroupSelector: string;
     readonly selaiSelector: string;
     readonly MaduSelector: string;
     readonly PrductSelector: string;
@@ -32,7 +34,7 @@ export class DataLandingPage {
     readonly DaftarButtonSelector: string;
     readonly loginButtonSelector: string;
     readonly errorMessageSelector: string;
-    readonly assertionSelector: string;
+    // readonly assertionSelector: string; 
     readonly assertionMakanan: string;
     readonly assertionMadu: string;
     readonly assertionProduct: string;
@@ -44,6 +46,7 @@ export class DataLandingPage {
         this.baseURL = baseURL;
         // this.popupSelector = popupSelector;
         this.foodSelector = foodSelector;
+        this.selaiGroupSelector = selaiGroupSelector;
         this.selaiSelector = selaiSelector;
         this.MaduSelector = MaduSelector;
         this.PrductSelector = PrductSelector;
@@ -63,12 +66,22 @@ export class DataLandingPage {
     async navigateToLandingPage() {
         await this.page.goto(this.baseURL);
         await expect(this.page).toHaveURL(this.baseURL);
-    
+        await this.closeAppPopup();
+    }
+
+    async closeAppPopup() {
+        const closeButton = this.page.locator('button[aria-label="Close"]');
+        try {
+            await closeButton.first().click({ timeout: 5000 });
+        } catch {
+            return;
+        }
     }
 
     async AddToCart(NumberPhone: string) {
         await this.page.click(this.foodSelector);
         await expect(this.page.locator(this.assertionMakanan)).toBeVisible();
+        await this.page.click(this.selaiGroupSelector);
         await this.page.click(this.selaiSelector);
         await this.page.click(this.MaduSelector);
         await expect(this.page.locator(this.assertionMadu)).toBeVisible();
